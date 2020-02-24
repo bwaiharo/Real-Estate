@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash ,Response, jsonify
 from sqlalchemy import create_engine, or_, and_
 from sqlalchemy.engine import reflection
 from sqlalchemy.ext.automap import automap_base
@@ -16,6 +16,7 @@ DB_URL = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USE
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
+app.secret_key = 'secret'
 
 db = SQLAlchemy(app)
 
@@ -92,7 +93,8 @@ def search_metadata(town, county=None, state=None):
         Restate_table.sp_olp,
     ]
 
-    results2 = db.session.query(*sel).filter(and_(Restate_table.town == town,Restate_table.county == county,Restate_table.state == state)).all()
+    # results2 = db.session.query(*sel).filter(and_(Restate_table.town == town,Restate_table.county == county,Restate_table.state == state)).all()
+    results2 = db.session.query(*sel).filter((Restate_table.town == town)|(Restate_table.county == county)|(Restate_table.state == state)).all()
     
     search_metadata_arr = list()
     for result in results2:
@@ -119,6 +121,38 @@ def search_metadata(town, county=None, state=None):
         search_metadata["sp_olp"] = result[19]
         search_metadata_arr.append(search_metadata)
     return jsonify(search_metadata_arr)
+
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    file = request.files['file']
+
+    # s3_resource = boto3.resource('s3')
+    # # my_bucket = s3_resource.Bucket(S3_BUCKET)
+    # my_bucket = s3_resource.Bucket('mushroommushroomboomboom')
+    # my_bucket.Object(file.filename).put(Body=file)
+
+    # #run the AI model
+    # pipi = predict('https://mushroommushroomboomboom.s3.us-east-2.amazonaws.com/'+file.filename)
+
+    # #Carry out the scrape
+    # scrape_pi = scrape_info(pipi['Predicted'][0])
+
+    # file_content.append(scrape_pi)
+
+    # #Save data to file
+    # with open('data.json', 'w', encoding='utf-8') as f:
+    #     json.dump(file_content, f, ensure_ascii=False, indent=4,sort_keys=True)
+    
+    # #Save to AWS S3
+    # s3.Object('mushroommushroomboomboom', 'data.json').put(Body=open('data.json', 'rb'))
+
+    # for i in range(len(file_content)):
+    #     print(file_content[i]['Item_Name'])
+ 
+    flash('File uploaded successfully')
+    return redirect(url_for('index'))
+
 
 if __name__ == "__main__":
     app.run()
