@@ -31,14 +31,15 @@ function autoCompleteandBuild() {
             return false;
         }
 
-
+        $(document).ready(function() {
         $(() => {
-
+          $("input:text").focus(function() { $(this).select(); } );
             $("#real-estate-form-input").autocomplete({
                 source: bt
             });
-            console.log(bt)
+            // console.log(bt)
         });
+      });
 
 
         //Array split to get town/county nd state and append to URL
@@ -77,7 +78,7 @@ function autoCompleteandBuild() {
             let reverseDate = date.reverse()
             let reverseSoldavdom =soldavdom.reverse() 
             let reverseSp_lp =sp_lp.reverse() 
-            console.log(reverseSoldavdom)
+            // console.log(reverseSoldavdom)
              //----------------------------------------------
 
              var trace1 = {
@@ -117,7 +118,7 @@ function autoCompleteandBuild() {
                   }
                 },
                 legend: {
-                  x: 0,
+                  x: 10,
                   y: 1.0,
                   bgcolor: 'rgba(255, 255, 255, 0)',
                   bordercolor: 'rgba(255, 255, 255, 0)'
@@ -143,7 +144,8 @@ function autoCompleteandBuild() {
             var data1 = [ trace3 ];
               
               var layout1 = {
-                title: town+','+county+','+state+'  Number of Houses on the Market per Month'
+                title: town+','+county+','+state+' Number of Houses on the Market per Month',
+                yaxis:{title: 'Number of Houses'}
               };
               
               Plotly.newPlot('line', data1, layout1);
@@ -162,7 +164,8 @@ function autoCompleteandBuild() {
             var data2 = [ trace4 ];
               
               var layout2 = {
-                title:town+','+county+','+state+ ' Average Days on the Market'
+                title:town+','+county+','+state+ ' Average Days on the Market',
+                yaxis:{title: 'Number of Days'}
               };
               
               Plotly.newPlot('line2', data2, layout2);
@@ -180,7 +183,8 @@ function autoCompleteandBuild() {
             var data3 = [ trace5 ];
               
               var layout3 = {
-                title:town+','+county+','+state+ ' Number of Units Sold'
+                title:town+','+county+','+state+ ' Number of Units Sold',
+                yaxis:{title: 'Number of Units'}
               };
               
               Plotly.newPlot('line3', data3, layout3);
