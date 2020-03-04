@@ -28,6 +28,7 @@ Base = automap_base()
 Base.prepare(db.engine, reflect=True)
 
 Restate_table = Base.classes.comprehensive
+Individual = Base.classes.individual
 
 engine = create_engine(DB_URL)
 insp = reflection.Inspector.from_engine(engine)
@@ -123,35 +124,57 @@ def search_metadata(town, county=None, state=None):
     return jsonify(search_metadata_arr)
 
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    file = request.files['file']
+@app.route('/G_town=/<town>')
+@app.route('/G_town=/<town>/G_county=/<county>')
+@app.route('/G_town=/<town>/G_county=/<county>/G_state=/<state>')
+def address_metadata(town, county=None, state=None):
+    """Return the MetaData for a given search."""
+    sel = [
+        Individual.town,
+        Individual.county,
+        Individual.state,
+        Individual.bathstotal,
+        Individual.beds,
+        Individual.garagecap,
+        Individual.domact,
+        Individual.basement,
+        Individual.closeddate,
+        Individual.yearbuilt,
+        Individual.daysonmarket,
+        Individual.listprice,
+        Individual.renovated,
+        Individual.salesprice,
+        Individual.streetnumber,
+        Individual.streetname,
+        Individual.mlsnum
+    ]
 
-    # s3_resource = boto3.resource('s3')
-    # # my_bucket = s3_resource.Bucket(S3_BUCKET)
-    # my_bucket = s3_resource.Bucket('mushroommushroomboomboom')
-    # my_bucket.Object(file.filename).put(Body=file)
-
-    # #run the AI model
-    # pipi = predict('https://mushroommushroomboomboom.s3.us-east-2.amazonaws.com/'+file.filename)
-
-    # #Carry out the scrape
-    # scrape_pi = scrape_info(pipi['Predicted'][0])
-
-    # file_content.append(scrape_pi)
-
-    # #Save data to file
-    # with open('data.json', 'w', encoding='utf-8') as f:
-    #     json.dump(file_content, f, ensure_ascii=False, indent=4,sort_keys=True)
+    # results2 = db.session.query(*sel).filter(and_(Restate_table.town == town,Restate_table.county == county,Restate_table.state == state)).all()
+    results2 = db.session.query(*sel).filter((Individual.town == town)|(Individual.county == county)|(Individual.state == state)).all()
     
-    # #Save to AWS S3
-    # s3.Object('mushroommushroomboomboom', 'data.json').put(Body=open('data.json', 'rb'))
-
-    # for i in range(len(file_content)):
-    #     print(file_content[i]['Item_Name'])
- 
-    flash('File uploaded successfully')
-    return redirect(url_for('index'))
+    search_metadata_arr = list()
+    for result in results2:
+        search_metadata = dict()
+        search_metadata["town"] = result[0]
+        search_metadata["county"] = result[1]
+        search_metadata["state"] = result[2]
+        search_metadata["bathstotal"] = float(result[3])
+        search_metadata["beds"] = result[4]
+        search_metadata["garagecap"] = result[5]
+        search_metadata["domact"] = result[6]
+        search_metadata["basement"] = result[7]
+        search_metadata["closeddate"] = result[8]
+        search_metadata["yearbuilt"] = str(result[9])
+        search_metadata["daysonmarket"] = result[10]
+        search_metadata["listprice"] = result[11]
+        search_metadata["renovated"] = str(result[12])
+        search_metadata["salesprice"] = result[13]
+        search_metadata["streetnumber"] = result[14]
+        search_metadata["streetname"] = result[15]
+        search_metadata["mlsnum"] = result[16]
+       
+        search_metadata_arr.append(search_metadata)
+    return jsonify(search_metadata_arr)
 
 
 if __name__ == "__main__":

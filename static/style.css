@@ -1,0 +1,22 @@
+
+.jumbotron {
+  background-image: url("https://www.bhg.com.au/media/21828/hamptons-home.jpg"); 
+    -webkit-background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    background-size: 100% 100%;
+    background-color: whitesmoke;
+}
+
+#map {
+
+  position:relative;
+   height: 400px;
+}
+.modal-content {
+    position: relative;
+    overflow-y: auto;
+    max-height: 600px;
+    padding: 15px;
+}
+
