@@ -13,8 +13,8 @@ from config import POSTGRES_USER,POSTGRES_PW,POSTGRES_URL,POSTGRES_DB
 app = Flask(__name__)
 
 DB_URL = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USER,pw=POSTGRES_PW,url=POSTGRES_URL,db=POSTGRES_DB)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '') or DB_URL
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '') or DB_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
 app.secret_key = 'secret'
 
