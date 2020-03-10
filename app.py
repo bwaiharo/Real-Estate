@@ -8,13 +8,14 @@ import numpy as np
 import pandas as pd
 import os
 
-# from config import POSTGRES_USER,POSTGRES_PW,POSTGRES_URL,POSTGRES_DB
+from config import POSTGRES_USER,POSTGRES_PW,POSTGRES_URL,POSTGRES_DB
 
 app = Flask(__name__)
 
 # DB_URL = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USER,pw=POSTGRES_PW,url=POSTGRES_URL,db=POSTGRES_DB)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '')
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '') or DB_URL
+DB_URL = 'postgres://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USER,pw=POSTGRES_PW,url=POSTGRES_URL,db=POSTGRES_DB)
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '') or DB_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
 app.secret_key = 'secret'
 
@@ -24,15 +25,20 @@ db = SQLAlchemy(app)
 
 # reflect an existing database into a new model
 Base = automap_base()
+
+# engine, suppose it has two tables 'user' and 'address' set up
+engine = create_engine(DB_URL)
 # reflect the tables
 Base.prepare(db.engine, reflect=True)
+
+
+
+# insp = reflection.Inspector.from_engine(engine)
+# print(insp.get_table_names())
 
 Restate_table = Base.classes.comprehensive
 Individual = Base.classes.individual
 
-# engine = create_engine(DB_URL)
-# insp = reflection.Inspector.from_engine(engine)
-# print(insp.get_table_names())
 
 @app.route("/")
 def index():
