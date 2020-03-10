@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import os
 
-from config import POSTGRES_USER,POSTGRES_PW,POSTGRES_URL,POSTGRES_DB
+# from config import POSTGRES_USER,POSTGRES_PW,POSTGRES_URL,POSTGRES_DB
 
 app = Flask(__name__)
 
